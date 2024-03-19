@@ -37,10 +37,10 @@ Comme la recompilation du noyau n’est pas suffisante pour permettre une grande
 
 | Contrainte      | Description                                              |
 |-----------------|----------------------------------------------------------|
-| Performance     | Optimisation des performances pour garantir une utilisation fluide des outils de pentest                   |
-| Sécurité        | Assurer la sécurité de la distribution et des outils intégrés contre les attaques potentielles            |
-| Modularité      | Permettre                                                                                                    |
-| Compatibilité matérielle |                                                                                                       |
+| Performance     | Optimisation des performances pour garantir une utilisation fluide des outils de pentest                    |
+| Sécurité        | Assurer la sécurité de la distribution et des outils intégrés contre les attaques potentielles              |
+| Modularité      | Permettre une gestion flexible et modulaire de la distribution pour répondre à divers besoins               |
+| Compatibilité matérielle | Assurer la compatibilité avec un large éventail de configurations matérielles                      |
 
 #### 2) Technologies utilisées
 
