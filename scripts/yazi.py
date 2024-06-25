@@ -3,6 +3,8 @@ from prettytable import PrettyTable
 import subprocess
 from colorama import Fore, Style
 import shlex
+import json
+import re
 from datetime import datetime
 
 def main():
@@ -69,7 +71,7 @@ def install():
         print(f'👎 Unavailable image : {TAG}\n')
         exit(1)
     FOLDER = TAG
-    TAG = 'yazi-' + TAG
+    TAG = 'yazi:' + TAG
     HOSTNAME = input('👽 Select a name for your container : ')
     HOSTNAME = 'yazi-'+HOSTNAME
     confirm = input('\n\n❓ Do you want to create '+ Style.BRIGHT + Fore.BLUE + f'{HOSTNAME} ' + Style.RESET_ALL +'based on '+ Style.BRIGHT + Fore.YELLOW + f'{TAG} ' + Style.RESET_ALL + '? (y/N) ')
@@ -77,9 +79,9 @@ def install():
         print("Not creating "+ Style.BRIGHT + Fore.BLUE + f"{HOSTNAME}" + Style.RESET_ALL +", exiting ! 👋")
         exit(1)
     PATH="~/yazi/scripts/"
-    buildDate = datetime.now().strftime("%A-%y-%m/%H:%M:%S")
+    buildDate = datetime.now().strftime("%Y-%m-%y/%H:%M:%S")
     buildCommand = f"podman build -q --build-arg buildDate={buildDate} -t {TAG} {PATH}/{FOLDER}/ > /dev/null"
-    createWorkspaceCommand = f"mkdir {PATH}.workspace/{HOSTNAME}"
+    createWorkspaceCommand = f"mkdir -p {PATH}.workspace/{HOSTNAME}"
     runCommand = f"podman run --name {HOSTNAME} -v {PATH}.workspace/{HOSTNAME}:/workspace --hostname {HOSTNAME} -itd {TAG}"
     startCommand = f"podman start {HOSTNAME}"
     execCommand = f"podman exec -it {HOSTNAME} zsh"
@@ -116,7 +118,62 @@ def install():
 
 
 def uninstall():
-    print("Uninstalling action")
+    
+
+    print("🖼️  Available images :\n")
+    table = PrettyTable()
+    table.field_names = [Fore.YELLOW + 'ID' + Style.RESET_ALL, Fore.YELLOW + 'TAG' + Style.RESET_ALL, Fore.YELLOW + 'Size' + Style.RESET_ALL, Fore.YELLOW + 'Build date' + Style.RESET_ALL, Fore.YELLOW + 'Version' + Style.RESET_ALL]
+    
+    getImages = "podman images --format json"
+    result = subprocess.run(getImages, shell=True,capture_output=True)
+    images = json.loads(result.stdout)
+    imageExists = 0 
+    for image in images:
+        try:
+            if re.search(r"yazi", image['Names'][0]):
+                imageExists = 1
+                table.add_row([image['Id'][:12],image['Labels']['yazi.tag'], str("{:.2f}".format(int(image['Size'])/(1024*1024))) + " MB", image['Labels']['yazi.buildDate'], image['Labels']['yazi.version']   ]) 
+        except KeyError as e:
+            continue
+
+    if imageExists == 0:
+        print(f"🫥 No image found")
+        exit(0)
+    
+    print(table)
+
+    selectedImage = input("\n👉 Select an image to delete by its TAG : ")
+    
+    checkInput = "podman images | awk \'$1 == \"" + 'localhost/yazi'+ "\" && $2 == \""+ selectedImage + "\" { found=1; exit } END { exit !found }\'"
+    if subprocess.run(checkInput, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).returncode:
+        print(f"💔 No image named {selectedImage}")
+        exit(0)
+
+    selectedImage = 'localhost/yazi:' + selectedImage
+    getContainersCommand = f"podman ps -a --format json"
+    
+    result = subprocess.run(getContainersCommand, shell=True, capture_output=True)
+    containers = json.loads(result.stdout)
+    matchingName = []
+    matchingStatus = []
+    deletionStatus = 0
+    if containers:
+        for container in containers:
+            if container['Image'] == selectedImage:
+                deletionStatus = 1
+                if container['State'] == 'running':
+                    stopCommand = f"podman stop {container['Names'][0]} > /dev/null"
+                    print(f"🛑 Stopping {container['Names'][0]}\n")
+                    subprocess.run(stopCommand, shell=True)
+
+                deleteCommand = f"podman rm {container['Names'][0]} > /dev/null"
+                print(f"🗑️  Deleting {container['Names'][0]}\n")
+                subprocess.run(deleteCommand, shell=True)
+
+    deleteImage = f"podman image rm {selectedImage} > /dev/null"
+    print(f"🚮 Deleting {selectedImage}")
+    subprocess.run(deleteImage, shell=True)
+
 
 def version():
     print("Version 1.0")
