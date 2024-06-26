@@ -2,7 +2,6 @@ import argparse
 from prettytable import PrettyTable
 import subprocess
 from colorama import Fore, Style
-import shlex
 import json
 import re
 from datetime import datetime
@@ -25,33 +24,68 @@ def main():
         install()
     elif args.action == 'uninstall':
         uninstall()
-    elif args.action == 'version':
-        version()
     elif args.action == 'help':
         print_help()
-
-
-def get_image_status(image_tag):
-    try:
-        result = subprocess.run(['podman', 'image', 'inspect', image_tag], capture_output=True, text=True)
-        if result.returncode == 0:
-            return "Up to date"
-        else:
-            return "Not installed"
-    except Exception as e:
-        return f"Error: {str(e)}"
-
-
-
-
 
 
 
 def start():
     print("\n👀 Available containers :\n\n")
 
+    table = PrettyTable()
+
+    table.field_names = [Fore.YELLOW + 'Container name' + Style.RESET_ALL, Fore.YELLOW + 'Image TAG' + Style.RESET_ALL, Fore.YELLOW + 'State' + Style.RESET_ALL, Fore.YELLOW + 'Version' + Style.RESET_ALL]
+
+
+    getContainersCommand = f"podman ps -a --format json"
+    
+    result = subprocess.run(getContainersCommand, shell=True, capture_output=True)
+    containers = json.loads(result.stdout)
+    deletionStatus = 0
+    if containers:
+        for container in containers:
+            table.add_row([container['Names'][0], container['Labels']['yazi.tag'], (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL), container['Labels']['yazi.version']])
+
+    print(table)
+    
+    toStart = input('\n👉 Enter the name of the container to start : ')
+
+    startContainer = f'podman start {toStart}'
+    enterContainer = f'podman exec -it {toStart} zsh'
+    if subprocess.run(startContainer, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).returncode == 0: 
+        subprocess.run(enterContainer, shell=True)
+    else:
+        print('☣️  An error occured, are you sure you entered the right name ?')
+
 def stop():
-    print("Stopping action")
+    
+    print("\n👀 Available containers :\n\n")
+
+    table = PrettyTable()
+
+    table.field_names = [Fore.YELLOW + 'Container name' + Style.RESET_ALL, Fore.YELLOW + 'Image TAG' + Style.RESET_ALL, Fore.YELLOW + 'State' + Style.RESET_ALL, Fore.YELLOW + 'Version' + Style.RESET_ALL]
+
+
+    getContainersCommand = f"podman ps --format json"
+    
+    result = subprocess.run(getContainersCommand, shell=True, capture_output=True)
+    containers = json.loads(result.stdout)
+    deletionStatus = 0
+    if containers:
+        for container in containers:
+            table.add_row([container['Names'][0], container['Labels']['yazi.tag'], (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL), container['Labels']['yazi.version']])
+
+    print(table)
+    
+    toStop = input('\n👉 Enter the name of the container to stop : ')
+
+    stopContainer = f'podman stop {toStop}'
+    if subprocess.run(stopContainer, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).returncode == 0:
+        print('\n🛑 Stopped {toStop}')
+    else:
+        print('☣️  An error occured, are you sure you entered the right name ?')
+    
+
 
 def install():
 
@@ -154,8 +188,6 @@ def uninstall():
     
     result = subprocess.run(getContainersCommand, shell=True, capture_output=True)
     containers = json.loads(result.stdout)
-    matchingName = []
-    matchingStatus = []
     deletionStatus = 0
     if containers:
         for container in containers:
@@ -175,11 +207,15 @@ def uninstall():
     subprocess.run(deleteImage, shell=True)
 
 
-def version():
-    print("Version 1.0")
-
 def print_help():
-    print("AIDE")
+    print(""" 🧸 usage:
+            
+     💻 - install       - Install an image of your choice.
+     🗑️  - uninstall     - Delete an image and its containers.
+     ▶️  - start         - Select a container to start.
+     ⏹️  - stop          - Select a container to stop.
+     🆘 - help          - Print this menu.
+          """)
 if __name__ == "__main__":
     main()
 
