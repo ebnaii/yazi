@@ -30,7 +30,6 @@ def main():
 
 
 def start():
-    print("\n👀 Available containers :\n\n")
 
     table = PrettyTable()
 
@@ -45,17 +44,22 @@ def start():
     if containers:
         for container in containers:
             table.add_row([container['Names'][0], container['Labels']['yazi.tag'], (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL), container['Labels']['yazi.version']])
-
-    print(table)
+        print("\n👀 Available containers :\n\n")
+        print(table)
     
-    toStart = input('\n👉 Enter the name of the container to start : ')
+        toStart = input('\n👉 Enter the name of the container to start : ')
 
-    startContainer = f'podman start {toStart}'
-    enterContainer = f'podman exec -it {toStart} zsh'
-    if subprocess.run(startContainer, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).returncode == 0: 
-        subprocess.run(enterContainer, shell=True)
+        startContainer = f'podman start {toStart}'
+        enterContainer = f'podman exec -it {toStart} zsh'
+        if subprocess.run(startContainer, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).returncode == 0: 
+            subprocess.run(enterContainer, shell=True)
+        else:
+            print('☣️  An error occured, are you sure you entered the right name ?')
     else:
-        print('☣️  An error occured, are you sure you entered the right name ?')
+        if input('👉 No container to start, do you want to create one ? (y/N) : ') not in ['y','Y']:
+            print("👋 Exiting")
+            exit(0)
+        install()
 
 def stop():
     
@@ -113,10 +117,11 @@ def install():
         print("Not creating "+ Style.BRIGHT + Fore.BLUE + f"{HOSTNAME}" + Style.RESET_ALL +", exiting ! 👋")
         exit(1)
     PATH="~/yazi/scripts/"
+    WORKSPACE="~/.yazi/workspaces/"
     buildDate = datetime.now().strftime("%Y-%m-%y/%H:%M:%S")
     buildCommand = f"podman build -q --build-arg buildDate={buildDate} -t {TAG} {PATH}/{FOLDER}/ > /dev/null"
-    createWorkspaceCommand = f"mkdir -p {PATH}.workspace/{HOSTNAME}"
-    runCommand = f"podman run --name {HOSTNAME} -v {PATH}.workspace/{HOSTNAME}:/workspace --hostname {HOSTNAME} -itd {TAG}"
+    createWorkspaceCommand = f"mkdir -p {WORKSPACE}{HOSTNAME}"
+    runCommand = f"podman run --name {HOSTNAME} -v {WORKSPACE}{HOSTNAME}:/workspace --hostname {HOSTNAME} -itd {TAG}"
     startCommand = f"podman start {HOSTNAME}"
     execCommand = f"podman exec -it {HOSTNAME} zsh"
     verifBuildCommand = f"podman images |grep {TAG}"
