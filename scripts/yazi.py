@@ -3,6 +3,7 @@ from prettytable import PrettyTable
 import subprocess
 from colorama import Fore, Style
 import json
+from pathlib import Path
 import re
 from datetime import datetime
 
@@ -85,7 +86,7 @@ def stop():
 
     stopContainer = f'podman stop {toStop}'
     if subprocess.run(stopContainer, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).returncode == 0:
-        print('\n🛑 Stopped {toStop}')
+        print(f'\n🛑 Stopped {toStop}')
     else:
         print('☣️  An error occured, are you sure you entered the right name ?')
     
@@ -99,13 +100,35 @@ def install():
     
     table.field_names = [Fore.YELLOW + 'Image' + Style.RESET_ALL, Fore.YELLOW + 'Size' + Style.RESET_ALL, Fore.YELLOW + 'Status' + Style.RESET_ALL]
 
-    table.add_row(["full","~1GB","Not installed"])
-    table.add_row(["osint","~1GB","Not installed"])
-    table.add_row(["web","~1GB","Not installed"])
+    getImages = "podman images --format json"
+    result = subprocess.run(getImages, shell=True,capture_output=True)
+    images = json.loads(result.stdout)
+    alreadyBuilded = []
+    for image in images:
+        try:
+            if re.search(r"yazi", image['Names'][0]):
+                alreadyBuilded.append(image['Names'][0].split(':')[1])
+                alreadyBuilded.append(image['Labels']['yazi.version'])
+        except KeyError as e:
+            continue
+    
+    PATH="~/yazi/scripts/*"
+    result = subprocess.run(f'find {PATH} -maxdepth 1 -type d', shell=True, capture_output=True, text=True)
+    folders = result.stdout.split()
+    availableImages = []
+    for folder in folders:
+        name=Path(folder).name
+        availableImages.append(name)
+        size = subprocess.run(f"awk -F= '/SIZE/ {{print $2}}' {folder}/.data", shell=True, capture_output=True, text=True).stdout
+        installed="Not installed"
+        if name in alreadyBuilded:
+            installed=f"Installed (v{alreadyBuilded[alreadyBuilded.index(name)+1]})"
+        table.add_row([name, size, installed])
+
     
     print(table)
     TAG = input("\n\n🚀 Select an image to install : ")
-    if TAG not in ['full','osint','web']:
+    if TAG not in availableImages:
         print(f'👎 Unavailable image : {TAG}\n')
         exit(1)
     FOLDER = TAG
@@ -171,7 +194,7 @@ def uninstall():
         try:
             if re.search(r"yazi", image['Names'][0]):
                 imageExists = 1
-                table.add_row([image['Id'][:12],image['Labels']['yazi.tag'], str("{:.2f}".format(int(image['Size'])/(1024*1024))) + " MB", image['Labels']['yazi.buildDate'], image['Labels']['yazi.version']   ]) 
+                table.add_row([image['Id'][:12],image['Names'][0].split('/')[1], str("{:.2f}".format(int(image['Size'])/(1024*1024))) + " MB", image['Labels']['yazi.buildDate'], image['Labels']['yazi.version']   ]) 
         except KeyError as e:
             continue
 
@@ -182,13 +205,15 @@ def uninstall():
     print(table)
 
     selectedImage = input("\n👉 Select an image to delete by its TAG : ")
-    
-    checkInput = "podman images | awk \'$1 == \"" + 'localhost/yazi'+ "\" && $2 == \""+ selectedImage + "\" { found=1; exit } END { exit !found }\'"
-    if subprocess.run(checkInput, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).returncode:
+    try:
+        checkInput = "podman images | awk \'$1 == \"" + 'localhost/yazi'+ "\" && $2 == \""+ selectedImage.split(':')[1] + "\" { found=1; exit } END { exit !found }\'"
+        if subprocess.run(checkInput, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).returncode:
+            print(f"💔 No image named {selectedImage}")
+            exit(0)
+    except IndexError:
         print(f"💔 No image named {selectedImage}")
         exit(0)
 
-    selectedImage = 'localhost/yazi:' + selectedImage
     getContainersCommand = f"podman ps -a --format json"
     
     result = subprocess.run(getContainersCommand, shell=True, capture_output=True)
@@ -196,7 +221,7 @@ def uninstall():
     deletionStatus = 0
     if containers:
         for container in containers:
-            if container['Image'] == selectedImage:
+            if container['Image'].split('/')[1] == selectedImage:
                 deletionStatus = 1
                 if container['State'] == 'running':
                     stopCommand = f"podman stop {container['Names'][0]} > /dev/null"
