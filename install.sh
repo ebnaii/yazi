@@ -31,7 +31,7 @@ else
     exit 1
 fi
 
-#git clone https://github.com/ebnaii/yazi.git
+git clone https://github.com/ebnaii/yazi.git
 chmod +x yazi/scripts/yazi.py
 DIR=$(pwd)
 SHELL_CONFIG_FILE=$(basename $SHELL | grep -Eo '\b(bash|zsh)\b' | awk '{print "."$1"rc"}')
