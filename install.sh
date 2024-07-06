@@ -41,4 +41,4 @@ elif which python3 >/dev/null 2>&1; then
     echo 'alias yazi="python3 '"$DIR"'/yazi/scripts/yazi.py"' >> /home/$USER/$SHELL_CONFIG_FILE
 fi
 
-source .bashrc
+source ~/$SHELL_CONFIG_FILE
