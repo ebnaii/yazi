@@ -56,45 +56,50 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master
 COPY ./passion.zsh-theme /root/.oh-my-zsh/themes/passion.zsh-theme
 COPY .zshrc /root/.zshrc
 
-RUN git clone https://github.com/owasp-amass/amass.git && \
+# Amass
+RUN git clone https://github.com/owasp-amass/amass.git > /dev/null 2>&1 && \
     cd amass && \
-    go install ./... && \
+    go install ./... > /dev/null 2>&1 && \
     mv /root/go/bin/amass /usr/local/bin/amass && \
     cd ..
 
-RUN git clone https://github.com/tomnomnom/assetfinder.git && \
+# Assetfinder
+RUN git clone https://github.com/tomnomnom/assetfinder.git > /dev/null 2>&1 && \
     cd assetfinder && \
-    go mod init assetfinder && \
-    go build -o assetfinder && \
+    go mod init assetfinder > /dev/null 2>&1 && \
+    go build -o assetfinder > /dev/null 2>&1 && \
     mv assetfinder /usr/local/bin && \
     cd ..
 
-RUN git clone https://github.com/digininja/CeWL.git && \
+# CeWL
+RUN git clone https://github.com/digininja/CeWL.git > /dev/null 2>&1 && \
     cd CeWL && \
-    gem install bundler && \
-    bundle install && \
+    gem install bundler > /dev/null 2>&1 && \
+    bundle install > /dev/null 2>&1 && \
     ln -s /root/CeWL/cewl.rb /usr/local/bin/cewl
 
-
-RUN git clone https://github.com/Dionach/CMSmap.git && \
+# CMSmap
+RUN git clone https://github.com/Dionach/CMSmap.git > /dev/null 2>&1 && \
     cd CMSmap && \
-    python3 -m venv venv && \
+    python3 -m venv venv > /dev/null 2>&1 && \
     . venv/bin/activate && \
-    if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi && \
+    if [ -f requirements.txt ]; then pip3 install -r requirements.txt > /dev/null 2>&1; fi && \
     chmod +x cmsmap.py && \
     ln -s /root/CMSmap/cmsmap.py /usr/local/bin/cmsmap && \
     deactivate && \
     cd ..
 
-RUN git clone https://github.com/maurosoria/dirsearch.git && \
+# Dirsearch
+RUN git clone https://github.com/maurosoria/dirsearch.git > /dev/null 2>&1 && \
     cd dirsearch && \
-    python3 -m venv venv && \
+    python3 -m venv venv > /dev/null 2>&1 && \
     . venv/bin/activate && \
-    pip3 install -r requirements.txt && \
+    pip3 install -r requirements.txt > /dev/null 2>&1 && \
     chmod +x dirsearch.py && \
     ln -s /root/dirsearch/dirsearch.py /usr/local/bin/dirsearch && \
     deactivate && \
     cd ..
+
 
 # Nettoyage
 RUN rm -rf /var/cache/apk/*
