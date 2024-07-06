@@ -1,0 +1,48 @@
+export ZSH="$HOME/.oh-my-zsh"
+
+ZSH_THEME="passion"
+
+plugins=(git)
+
+source $ZSH/oh-my-zsh.sh
+
+
+alias ll="ls -latrh"
+alias msfconsole="/usr/local/bin/msfconsole"
+alias nmap="/usr/bin/nmap"
+alias sqlmap="/usr/local/bin/sqlmap"
+alias wireshark="/usr/bin/wireshark"
+alias hydra="/usr/local/bin/hydra"
+alias john="/usr/local/bin/john"
+alias hashcat="/usr/local/bin/hashcat"
+alias gobuster="/usr/local/bin/gobuster"
+alias sublist3r="/usr/local/bin/sublist3r"
+alias theHarvester="/usr/local/bin/theHarvester"
+alias spiderfoot="/usr/local/bin/spiderfoot"
+alias recon-ng="/usr/local/bin/recon-ng"
+alias exiftool="/usr/bin/exiftool"
+alias osrf="/usr/local/bin/osrf"
+alias maltego="/usr/bin/maltego"
+alias ffuf="/usr/local/bin/ffuf"
+alias bloodhound="/usr/local/bin/bloodhound"
+alias responder="/usr/local/bin/responder"
+alias masscan="/usr/local/bin/masscan"
+alias amass="/usr/local/bin/amass"
+alias arjun="/usr/local/bin/arjun"
+alias assetfinder="/usr/local/bin/assetfinder"
+alias blackbird="/usr/local/bin/blackbird"
+alias bolt="/usr/local/bin/bolt"
+alias burpsuite="java -jar /usr/local/bin/burpsuite.jar"
+alias cewl="/usr/local/bin/cewl"
+alias cloudfail="/usr/local/bin/cloudfail"
+alias cmsmap="/usr/local/bin/cmsmap"
+alias dirb="/usr/local/bin/dirb"
+alias dirsearch="/usr/local/bin/dirsearch"
+alias droopescan="/usr/local/bin/droopescan"
+alias impacket="/usr/local/bin/impacket"
+alias crackmapexec="/usr/local/bin/cme"
+alias evil-winrm="/usr/local/bin/evil-winrm"
+alias autorecon="/usr/local/bin/autorecon"
+alias subfinder="/usr/local/bin/subfinder"
+alias wpscan="/usr/local/bin/wpscan"
+

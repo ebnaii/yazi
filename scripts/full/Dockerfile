@@ -155,11 +155,73 @@ RUN git clone https://github.com/i3visio/osrframework.git && \
     deactivate && \
     cd ..
 
+# Amass
+RUN git clone https://github.com/owasp-amass/amass.git && \
+    cd amass && \
+    go install ./... && \
+    mv /root/go/bin/amass /usr/local/bin/amass && \
+    cd ..
+
+# Assetfinder
+RUN git clone https://github.com/tomnomnom/assetfinder.git && \
+    cd assetfinder && \
+    go mod init assetfinder && \
+    go build -o assetfinder && \
+    mv assetfinder /usr/local/bin && \
+    cd ..
+
+# CeWL
+RUN git clone https://github.com/digininja/CeWL.git && \
+    cd CeWL && \
+    gem install bundler && \
+    bundle install && \
+    ln -s /root/CeWL/cewl.rb /usr/local/bin/cewl
+
+# CMSmap
+RUN git clone https://github.com/Dionach/CMSmap.git && \
+    cd CMSmap && \
+    python3 -m venv venv && \
+    . venv/bin/activate && \
+    if [ -f requirements.txt ]; then pip3 install -r requirements.txt; fi && \
+    chmod +x cmsmap.py && \
+    ln -s /root/CMSmap/cmsmap.py /usr/local/bin/cmsmap && \
+    deactivate && \
+    cd ..
+
+# Dirsearch
+RUN git clone https://github.com/maurosoria/dirsearch.git && \
+    cd dirsearch && \
+    python3 -m venv venv && \
+    . venv/bin/activate && \
+    pip3 install -r requirements.txt && \
+    chmod +x dirsearch.py && \
+    ln -s /root/dirsearch/dirsearch.py /usr/local/bin/dirsearch && \
+    deactivate && \
+    cd ..
+
+# Responder
+RUN git clone https://github.com/lgandx/Responder.git && \
+    cd Responder && \
+    ln -s $(pwd)/Responder.py /usr/local/bin/responder && \
+    cd ..
+
+# Masscan
+RUN git clone https://github.com/robertdavidgraham/masscan.git && \
+    cd masscan && \
+    make && \
+    ln -s $(pwd)/bin/masscan /usr/local/bin/masscan && \
+    cd ..
+
+# FFuf
+RUN go install github.com/ffuf/ffuf@latest && \
+    ln -s /root/go/bin/ffuf /usr/local/bin/ffuf
+
+
 # Nettoyage des paquets de développement mais garder git
 RUN rm -rf /var/cache/apk/*
 
 # Source les alias à chaque ouverture de shell
-RUN echo 'source ~/.zshrc' >> /etc/zsh/zshrc
+RUN echo 'source /root/.zshrc' >> /etc/zsh/zshrc
 
 RUN mkdir /workspace
 WORKDIR /workspace
