@@ -13,19 +13,6 @@ do
     fi
 done
 
-if [ -f /etc/debian_version ]; then
-    ...
-elif [ -f /etc/SuSe-release ]; then
-    ...
-elif [ -f /etc/redhat-release ]; then
-    ...
-else
-    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
-    OS=$(uname -s)
-    VER=$(uname -r)
-fi
-
-
 if [[ $PKG = "pacman" ]];then
     sudo pacman -S --noconfirm podman python-prettytable python-colorama git
 elif [[ $PKG = "apt-get" ]]; then
