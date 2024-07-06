@@ -17,7 +17,7 @@ if [[ $PKG = "pacman" ]];then
     sudo pacman -S --noconfirm podman python-prettytable python-colorama git
 elif [[ $PKG = "apt-get" ]]; then
     sudo apt-get install -y podman python3-prettytable python3-colorama git
-elif [[ $PGK = "apk" ]]; then
+elif [[ $PKG = "apk" ]]; then
     apk add -y podman python3-prettytable python3-colorama python3-pip git
 elif [[ $PKG = "yum" ]]; then
     sudo yum install -y epel-release
