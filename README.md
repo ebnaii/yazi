@@ -1,7 +1,7 @@
 # Yazi
 
 As a school project, we decided to create a bunch of pentest containers all available in open source and easily customisable.
-In addition to the containers we added an iso based on Alpine Linux containing natively the solotuion.
+In addition to the containers we added an iso based on Alpine Linux containing natively the solution.
 
 ## Overview
 
