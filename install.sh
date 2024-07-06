@@ -13,12 +13,25 @@ do
     fi
 done
 
+if [ -f /etc/debian_version ]; then
+    ...
+elif [ -f /etc/SuSe-release ]; then
+    ...
+elif [ -f /etc/redhat-release ]; then
+    ...
+else
+    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
+    OS=$(uname -s)
+    VER=$(uname -r)
+fi
+
+
 if [[ $PKG = "pacman" ]];then
     sudo pacman -S --noconfirm podman python-prettytable python-colorama git
 elif [[ $PKG = "apt-get" ]]; then
     sudo apt-get install -y podman python3-prettytable python3-colorama git
 elif [[ $PKG = "apk" ]]; then
-    apk add -y podman python3-prettytable python3-colorama python3-pip git
+    apk add podman python3-prettytable python3-colorama python3-pip git
 elif [[ $PKG = "yum" ]]; then
     sudo yum install -y epel-release
     sudo yum install -y podman python3-prettytable python3-colorama git
