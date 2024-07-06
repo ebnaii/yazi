@@ -3,7 +3,7 @@ name: Bug report
 about: Report a bug for us to fix
 title: "[BUG]"
 labels: bug
-assignees: ebnaii, Sifaly, ryanalg, adamlbrdn1
+assignees: adamlbrdn1, ebnaii, ryanalg, Sifaly
 
 ---
 
