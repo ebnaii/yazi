@@ -9,7 +9,7 @@ from datetime import datetime
 
 def main():
     parser = argparse.ArgumentParser(description="Script to manage YAZI")
-    parser.add_argument('action', nargs='?', choices=['start', 'stop', 'install', 'uninstall', 'version', 'help'])
+    parser.add_argument('action', nargs='?', choices=['start', 'stop', 'install', 'uninstall', 'remove', 'help'])
     
     args = parser.parse_args()
 
@@ -25,6 +25,8 @@ def main():
         install()
     elif args.action == 'uninstall':
         uninstall()
+    elif args.action == 'remove':
+        remove()
     elif args.action == 'help':
         print_help()
 
@@ -127,7 +129,7 @@ def install():
 
     
     print(table)
-    TAG = input("\n\n🚀 Select an image to install : ")
+    TAG = input("\n\n🚀 Select an image to use : ")
     if TAG not in availableImages:
         print(f'👎 Unavailable image : {TAG}\n')
         exit(1)
@@ -147,7 +149,7 @@ def install():
     runCommand = f"podman run --name {HOSTNAME} -v {WORKSPACE}{HOSTNAME}:/workspace --hostname {HOSTNAME} -itd {TAG}"
     startCommand = f"podman start {HOSTNAME}"
     execCommand = f"podman exec -it {HOSTNAME} zsh"
-    verifBuildCommand = f"podman images |grep {TAG}"
+    verifBuildCommand = f"podman images | awk \'$1 == \"" + 'localhost/yazi'+ "\" && $2 == \""+ TAG.split(':')[1] + "\" { found=1; exit } END { exit !found }\'"
     verifRunCommand = f"podman ps -a |grep {HOSTNAME}"
     verifStartedCommand = f"podman ps |grep {HOSTNAME}"
 
@@ -165,7 +167,8 @@ def install():
             subprocess.run(execCommand, shell=True)
             exit(0)
         else:
-            print('\n[🤓] Container already created !')
+            print(f'\n[🤓] A container with the hostname {HOSTNAME} already exists !')
+            exit(0)
         
         if subprocess.run(verifStartedCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True).returncode:
             print('\n[✈️] Starting container ' + Fore.BLUE + Style.BRIGHT + f'{HOSTNAME}' + Style.RESET_ALL)
@@ -236,12 +239,51 @@ def uninstall():
     print(f"🚮 Deleting {selectedImage}")
     subprocess.run(deleteImage, shell=True)
 
+def remove():
+    table = PrettyTable()
+
+    table.field_names = [Fore.YELLOW + 'Container name' + Style.RESET_ALL, Fore.YELLOW + 'Image TAG' + Style.RESET_ALL, Fore.YELLOW + 'State' + Style.RESET_ALL, Fore.YELLOW + 'Version' + Style.RESET_ALL]
+
+
+    getContainersCommand = f"podman ps -a --format json"
+    
+    result = subprocess.run(getContainersCommand, shell=True, capture_output=True)
+    containers = json.loads(result.stdout)
+    status = 0
+    if containers:
+        for container in containers:
+            table.add_row([container['Names'][0], container['Labels']['yazi.tag'], (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL), container['Labels']['yazi.version']])
+        print("\n👀 Available containers :\n\n")
+        print(table)
+        
+        toRemove = input('\n👉 Enter the name of the container to remove : ')
+
+        stopContainer = f'podman stop {toRemove} > /dev/null'
+        removeContainer = f'podman rm {toRemove} > /dev/null'
+        status = 0
+        for container in containers:
+            if container['Names'][0] == toRemove:
+                status = 1
+                if container['State'] == "running":
+                    print(f"🛑 Stopping {container['Names'][0]}\n")
+                    subprocess.run(stopContainer, shell=True)
+                print(f"🗑️  Deleting {container['Names'][0]}\n")
+                subprocess.run(removeContainer, shell=True)
+        
+        if status == 0:
+            print(f"☣️  No container named {toRemove}, are you sure you entered the right name ?")
+            exit(0)
+    else:
+        print('👉 No container to delete.')
+        print("👋 Exiting")
+        exit(0)
 
 def print_help():
     print(""" 🧸 usage:
             
      💻 - install       - Install an image of your choice.
      🗑️  - uninstall     - Delete an image and its containers.
+     ❌ - remove        - Delete a selected container.
      ▶️  - start         - Select a container to start.
      ⏹️  - stop          - Select a container to stop.
      🆘 - help          - Print this menu.
