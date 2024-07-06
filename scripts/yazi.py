@@ -281,7 +281,7 @@ def remove():
 def print_help():
     print(""" 🧸 usage:
             
-     💻 - install       - Install an image of your choice.
+     💻 - install       - Install an image or create a container.
      🗑️  - uninstall     - Delete an image and its containers.
      ❌ - remove        - Delete a selected container.
      ▶️  - start         - Select a container to start.
