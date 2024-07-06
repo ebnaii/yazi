@@ -1,4 +1,4 @@
-![Podman LOGO](podmanlogo.png)
+![Podman LOGO](images/podmanlogo.png)
 
 > **_NOTE:_** 
 >Daniel J. Walsh, leader of the team that created Podman published a reference book in Mars 2023 named : **Podman in Action**
@@ -40,7 +40,7 @@ Under Linux, the following partitioning mechanisms are used to create containers
 
 | 3 apps in 3 host VMs on 1 host                           | 3 apps in 3 containers on 1 host                        |
 |----------------------------------------------|----------------------------------------|
-| ![APPS VM](apps-vm.png) | ![APPS CONTAINER](apps-containers.png) |
+| ![APPS VM](images/apps-vm.png) | ![APPS CONTAINER](images/apps-containers.png) |
 
 
 ### Container Orchestrators
@@ -79,7 +79,7 @@ An image has three components:
 
 We can use ``podman inspect`` to examine an image manifest : 
 
-![Podman inspect demo](podman-inspect.png)
+![Podman inspect demo](images/podman-inspect.png)
 
 The JSON files and rootfs are packaged together with tar to form an image. The images are finally published on regitries.
 
@@ -96,7 +96,7 @@ Podman and docker are both container engines, and the differences between them l
 
 | Comparison of podman and docker functionalities |                       |
 |----------------------------------------------|----------------------------------------|
-| ![comparaison1](podman-docker-1.png) | ![comparaison2](podman-docker-2.png) |
+| ![comparaison1](images/podman-docker-1.png) | ![comparaison2](images/podman-docker-2.png) |
 
 
 ### Architecutre
@@ -110,11 +110,11 @@ On the security side, not using a privileged daemon has several advantages:
 
 | Docker architecture | Podman architecture |
 |----------------------------------------------|----------------------------------------|
-| ![comparaison1](docker-architecture.png) | ![comparaison2](podman-architecture.png) |
+| ![comparaison1](images/docker-architecture.png) | ![comparaison2](images/podman-architecture.png) |
 
 ### So why use podman instead of Docker ?
 
-~~beacuse~~
+~~beacuse it's cool~~
 
  Podman's most interesting feature is its ability to run rootless containers. Deploying rootless containers makes it possible to run code that may be untrusted, minimizing the risk to the host. Which is a good point for us, counting on the possible code that could execute in our containers, but it of course doesn't guarantee 100% security.
 
@@ -135,6 +135,16 @@ If you'd like to know more about these reasons, feel free to read the book where
 You will mainly use the python script made for using de container but it will always be good to have so bases if you need to debug something at anytime.
 
 You can find all commands [here](https://docs.podman.io/en/stable/Commands.html)
+
+The basics are explicit : 
+
+``podman build`` -> create images.
+``podman run`` -> create container.
+``podman rm`` -> delete a container
+``podman stop`` -> stop a container.
+``podman start`` -> start a container.
+``podman images`` -> show all your images
+``podman image ARG`` -> manage your images 
 
 
 Here are some usefull command if you want to create issues on github in order to give us details !
