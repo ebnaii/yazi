@@ -248,11 +248,16 @@ def remove():
     getContainersCommand = f"podman ps -a --format json"
     
     result = subprocess.run(getContainersCommand, shell=True, capture_output=True)
+    getTag = "podman ps -a --format json | awk -F': ' '/\"yazi.tag\":/ {gsub(/\"|,/, \"\", $2); print $2}'"
+    getVersion = "podman ps -a --format json | awk -F': ' '/\"yazi.version\":/ {gsub(/\"|,/, \"\", $2); print $2}'"
     containers = json.loads(result.stdout)
     status = 0
     if containers:
         for container in containers:
-            table.add_row([container['Names'][0], container['Labels']['yazi.tag'], (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL), container['Labels']['yazi.version']])
+            table.add_row([container['Names'][0],
+            subprocess.run(getTag, shell=True,capture_output=True).stdout.decode('utf-8').strip(),
+            (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL),
+            subprocess.run(getVersion, shell=True,capture_output=True).stdout.decode('utf-8').strip()])
         print("\n👀 Available containers :\n\n")
         print(table)
         
