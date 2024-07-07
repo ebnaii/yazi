@@ -44,9 +44,14 @@ def start():
     result = subprocess.run(getContainersCommand, shell=True, capture_output=True)
     containers = json.loads(result.stdout)
     deletionStatus = 0
+    getTag = "podman ps -a --format json | awk -F': ' '/\"yazi.tag\":/ {gsub(/\"|,/, \"\", $2); print $2}'"
+    getVersion = "podman ps -a --format json | awk -F': ' '/\"yazi.version\":/ {gsub(/\"|,/, \"\", $2); print $2}'"
     if containers:
         for container in containers:
-            table.add_row([container['Names'][0], container['Labels']['yazi.tag'], (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL), container['Labels']['yazi.version']])
+            table.add_row([container['Names'][0],
+            subprocess.run(getTag, shell=True,capture_output=True).stdout.decode('utf-8').strip(),
+            (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL),
+            subprocess.run(getVersion, shell=True,capture_output=True).stdout.decode('utf-8').strip()])
         print("\n👀 Available containers :\n\n")
         print(table)
     
@@ -66,8 +71,6 @@ def start():
 
 def stop():
     
-    print("\n👀 Available containers :\n\n")
-
     table = PrettyTable()
 
     table.field_names = [Fore.YELLOW + 'Container name' + Style.RESET_ALL, Fore.YELLOW + 'Image TAG' + Style.RESET_ALL, Fore.YELLOW + 'State' + Style.RESET_ALL, Fore.YELLOW + 'Version' + Style.RESET_ALL]
@@ -78,11 +81,16 @@ def stop():
     result = subprocess.run(getContainersCommand, shell=True, capture_output=True)
     containers = json.loads(result.stdout)
     deletionStatus = 0
+    getTag = "podman ps -a --format json | awk -F': ' '/\"yazi.tag\":/ {gsub(/\"|,/, \"\", $2); print $2}'"
+    getVersion = "podman ps -a --format json | awk -F': ' '/\"yazi.version\":/ {gsub(/\"|,/, \"\", $2); print $2}'"
     if containers:
         for container in containers:
-            table.add_row([container['Names'][0], container['Labels']['yazi.tag'], (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL), container['Labels']['yazi.version']])
-
-    print(table)
+            table.add_row([container['Names'][0],
+            subprocess.run(getTag, shell=True,capture_output=True).stdout.decode('utf-8').strip(),
+            (Fore.GREEN + container['State'] + Style.RESET_ALL) if container['State'] == "running" else (Fore.RED + "stopped" + Style.RESET_ALL),
+            subprocess.run(getVersion, shell=True,capture_output=True).stdout.decode('utf-8').strip()])
+        print("\n👀 Available containers :\n\n")
+        print(table)
     
     toStop = input('\n👉 Enter the name of the container to stop : ')
 
