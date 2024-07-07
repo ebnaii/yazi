@@ -1,1 +1,60 @@
+Guide d'Installation d'un ISO Alpine Linux Custom
+Ce guide vous explique comment créer un ISO Alpine Linux personnalisé depuis un système Linux. Les étapes incluent la configuration initiale, l'installation des packages nécessaires, le clonage des fichiers sources, et la création de l'ISO.
 
+Pré-requis
+Accès root : Utiliser le mot de passe root.
+Configuration initiale : Exécuter setup-alpine pour les préférences utilisateur telles que la langue, le clavier, le miroir, le fuseau horaire, etc.
+Étapes d'Installation
+1. Configuration Initiale
+Démarrer en mode root avec le mot de passe : root.
+Exécuter setup-alpine pour configurer les préférences utilisateur. Suivez les instructions pour définir la langue, le clavier, le miroir des paquets, le fuseau horaire, etc.
+2. Installation des Packages Essentiels
+Pour créer un ISO, vous devez installer plusieurs packages essentiels. Exécutez la commande suivante pour les télécharger et les installer :
+
+sh
+Copier le code
+apk add alpine-sdk alpine-conf syslinux xorriso squashfs-tools grub grub-efi doas
+3. Clonage du Répertoire de Build
+Clonez le répertoire où tout le build de l'ISO se situera. Utilisez la commande suivante :
+
+sh
+Copier le code
+git clone --depth=1 https://gitlab.alpinelinux.org/alpine/aports.git
+4. Configuration du Système
+Assurez-vous que votre système dispose des ressources minimales suivantes :
+
+Stockage : Au moins 6GB d'espace disponible pour créer l'ISO.
+RAM : Au moins 5-6GB de RAM.
+De plus, assurez-vous que le répertoire /tmp peut stocker l'ISO pendant le processus de création.
+
+5. Configuration de mkimg.sh
+Le fichier mkimg.sh est le fichier de configuration de l'ISO. Il est situé dans le répertoire /home/build/aports/scripts. Vous devrez peut-être modifier ce fichier pour personnaliser votre ISO selon vos besoins spécifiques.
+
+6. Création de l'ISO
+Une fois toutes les étapes ci-dessus complétées, suivez les instructions dans les scripts et documents fournis dans le répertoire cloné pour créer l'ISO Alpine Linux personnalisé.
+
+7. Signature de l'ISO
+N'oubliez pas de signer votre ISO avant de l'utiliser ou de le distribuer. Cela garantit son intégrité et son authenticité.
+
+Résumé des Commandes Utilisées
+Démarrer en mode root :
+
+sh
+Copier le code
+su
+Configurer les préférences utilisateur :
+
+sh
+Copier le code
+setup-alpine
+Installer les packages essentiels :
+
+sh
+Copier le code
+apk add alpine-sdk alpine-conf syslinux xorriso squashfs-tools grub grub-efi doas
+Cloner le répertoire de build :
+
+sh
+Copier le code
+git clone --depth=1 https://gitlab.alpinelinux.org/alpine/aports.git
+Assurez-vous de suivre chaque étape attentivement pour créer un ISO Alpine Linux personnalisé fonctionnel.
