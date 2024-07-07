@@ -91,7 +91,10 @@ def stop():
             subprocess.run(getVersion, shell=True,capture_output=True).stdout.decode('utf-8').strip()])
         print("\n👀 Available containers :\n\n")
         print(table)
-    
+    else:
+        print("No container to stop, exiting !")
+        exit(0)
+
     toStop = input('\n👉 Enter the name of the container to stop : ')
 
     stopContainer = f'podman stop {toStop}'
@@ -133,7 +136,7 @@ def install():
         installed="Not installed"
         if name in alreadyBuilded:
             installed=f"Installed (v{alreadyBuilded[alreadyBuilded.index(name)+1]})"
-        table.add_row([name, size, installed])
+        table.add_row([name + "\n", size, installed])
 
     
     print(table)
