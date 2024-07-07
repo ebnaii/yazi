@@ -144,7 +144,7 @@ The basics are explicit :
 ``podman stop`` -> stop a container. \
 ``podman start`` -> start a container. \
 ``podman images`` -> show all your images. \
-``podman image ARG`` -> manage your images. \
+``podman image ARG`` -> manage your images.
 
 
 Here are some usefull command if you want to create issues on github in order to give us details !
