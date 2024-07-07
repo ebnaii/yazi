@@ -146,7 +146,7 @@ def install():
     buildDate = datetime.now().strftime("%Y-%m-%y/%H:%M:%S")
     buildCommand = f"podman build -q --build-arg buildDate={buildDate} -t {TAG} {PATH}/{FOLDER}/ > /dev/null"
     createWorkspaceCommand = f"mkdir -p {WORKSPACE}{HOSTNAME}"
-    runCommand = f"podman run --name {HOSTNAME} -v {WORKSPACE}{HOSTNAME}:/workspace --hostname {HOSTNAME} -itd {TAG}"
+    runCommand = f"podman run --privileged --name {HOSTNAME} -v {WORKSPACE}{HOSTNAME}:/workspace --hostname {HOSTNAME} -itd {TAG}"
     startCommand = f"podman start {HOSTNAME}"
     execCommand = f"podman exec -it {HOSTNAME} zsh"
     verifBuildCommand = f"podman images | awk \'$1 == \"" + 'localhost/yazi'+ "\" && $2 == \""+ TAG.split(':')[1] + "\" { found=1; exit } END { exit !found }\'"
