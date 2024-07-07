@@ -138,13 +138,13 @@ You can find all commands [here](https://docs.podman.io/en/stable/Commands.html)
 
 The basics are explicit : 
 
-``podman build`` -> create images.
-``podman run`` -> create container.
-``podman rm`` -> delete a container
-``podman stop`` -> stop a container.
-``podman start`` -> start a container.
-``podman images`` -> show all your images
-``podman image ARG`` -> manage your images 
+``podman build`` -> create images. \
+``podman run`` -> create container. \
+``podman rm`` -> delete a container. \
+``podman stop`` -> stop a container. \
+``podman start`` -> start a container. \
+``podman images`` -> show all your images. \
+``podman image ARG`` -> manage your images. \
 
 
 Here are some usefull command if you want to create issues on github in order to give us details !
